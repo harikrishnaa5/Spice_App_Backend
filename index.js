@@ -23,7 +23,7 @@ app.use("/images", express.static("images"));
 //Middleware
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
-app.use(cors());
+app.use(cors({origin:[ "http://localhost:3000","https://spiceapp.netlify.app/"]}));
 
 dotenv.config();
 const httpServer = createServer(app)
@@ -32,7 +32,7 @@ const httpServer = createServer(app)
 const io = new Server(httpServer, {
   cors: {
     methods:["GET","POST"],
-    origin: "http://localhost:3000"
+    origin:[ "http://localhost:3000","https://spiceapp.netlify.app"]
   },
 });
 console.log("socket Started at Port 8800");
