@@ -10,6 +10,7 @@ import {
   showComments,
   showPosts,
   getUserPosts,
+  reportPost,
 } from "../Controller/postController.js";
 import authMiddlware from "../Middlewares/authMiddlware.js";
 const router = express.Router();
@@ -24,7 +25,7 @@ router.post("/addComment", addComment);
 router.post('/showComments',showComments)
 router.post('/showPosts',showPosts)
 router.get('/:id/getUserPost',getUserPosts)
-//router.put('/:id', reportPost)
+router.put('/report', reportPost)
 
 
 export default router;

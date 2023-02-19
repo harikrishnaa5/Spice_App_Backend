@@ -92,9 +92,10 @@ export const getTimeLinePost = async (req, res) => {
     const user = await userModel.findOne({ _id: userId }, { following: 1 });
   
     const currentUserPosts = await postModel
-      .find({
-        userId: { $in: [...user.following, userId] },
-      })
+      .find({$and:[{
+        userId: { $in: [...user.following, userId] }},
+        {'report.userId':{$ne:userId}
+      }]})
       .populate("userId")
       .sort({ createdAt: "ascending" });
       currentUserPosts.reverse()
@@ -172,3 +173,42 @@ export const getUserPosts = async (req, res) => {
     res.status(500).json({ message: "error found" ,error});
   }
 };
+
+//Report post
+export const reportPost = async (req, res) => {
+  try {
+    const {postId, userId, reason} = req.body
+    console.log(req.body)
+    const post = await postModel.findById(postId)
+    console.log(post)
+    if(post.userId !== userId){
+      // const report = await postModel.updateOne({_id: postId}, {$push: {report: {userId: userId, reason: reason}}})
+      if(! Array.isArray( post.report))
+      {
+        post.report =[]
+      }
+      post.report.push({userId,reason})
+      post.save()
+      res.status(200).json("post reported successfully");
+    }
+    else{
+      res.status(403).json("Action forbidden");
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ message: "error found" ,error});
+  }
+}
+
+//delete reported post manually
+export const deleteReported=async(req,res)=>{
+  const postId=req.params.id;
+  try {
+   const response = await postModel.findByIdAndDelete(postId)
+   console.log(response);
+   res.status(200).json('Removed')
+  } catch (error) {
+    console.log(error)
+    res.status(500).json(error)
+  }
+}
